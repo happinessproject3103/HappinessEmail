@@ -5,6 +5,7 @@ import freemarker.template.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +14,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -44,8 +46,8 @@ public class MailSenderSpring {
         helper.setText(mail.getContent());
 
         // hard coded a file path
-        // FileSystemResource file = new FileSystemResource(new    File("path/img.png"));
-        // helper.addAttachment("Google Photo",file);
+        FileSystemResource file = new FileSystemResource(new File("path/img.png"));
+        helper.addAttachment("Google Photo", file);
         helper.addAttachment("Google Photo", new ClassPathResource("img.png"));
         javaMailSender.send(msg);
     }
@@ -72,7 +74,7 @@ public class MailSenderSpring {
         StringBuffer content = new StringBuffer();
 
         try {
-            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(fmConfiguration.getTemplate("email-template.flth"), model));
+            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(fmConfiguration.getTemplate("email.flth"), model));
         } catch (Exception e) {
             e.printStackTrace();
         }
