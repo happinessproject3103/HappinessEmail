@@ -40,4 +40,8 @@ public class UserService {
     public User getUser(String name){
         return getAllUsers().stream().filter(user -> user.getFirstName().equals(name) ).findFirst().get();
     }
+
+    public User getUserByEmail(String email){
+        return getAllUsers().stream().filter(user -> user.getEmailAddress().equals(email) ).findFirst().get();
+    }
 }

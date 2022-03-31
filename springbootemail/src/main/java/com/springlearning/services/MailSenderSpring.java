@@ -22,6 +22,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,36 +60,7 @@ public class MailSenderSpring {
         helper.setSubject(mail.getSubject());
        // helper.setText(mail.getContent());
 
-        Map map = new HashMap();
-        map.put(1,"1.htm");
-        map.put(2,"2.htm");
-        map.put(3,"3.htm");
-        map.put(4,".jpg");
-        map.put(5,"5.jpg");
-        map.put(6,"6.jpg");
-        map.put(7,"7.png");
-        map.put(8,"8.png");
-        map.put(9,"9.png");
-        map.put(10,"10.jpg");
-        map.put(11,"11.jpg");
-        map.put(12,"12.jpg");
-        map.put(13,"13.jpg");
-        map.put(14,"14.jpg");
-        map.put(15,"15.jpg");
-        map.put(16,"16.jpg");
-        map.put(17,"17.jpg");
-        map.put(18,"18.jpg");
-        map.put(19,"19.jpg");
-        map.put(20,"20.jpg");
-        map.put(21,"21.jpg");
-        map.put(22,"22.jpg");
-
-        Random rand = new Random();
-        int imageName = rand.nextInt(map.size());
-
-        //random number generator between one and 20
-        URL resource = getClass().getClassLoader().getResource("images/All/"+map.get(imageName));
-        File fileToInsert = new File(resource.toURI());
+        File fileToInsert = getFileToInsert();
         MimeBodyPart imagePart = new MimeBodyPart();
         imagePart.setHeader("Content-ID", "AbcXyz123");
         imagePart.setDisposition(MimeBodyPart.INLINE);
@@ -106,7 +78,7 @@ public class MailSenderSpring {
 
         // inline images
         Map<String, String> inlineImages = new HashMap<String, String>();
-        //inlineImages.put("image1", "M:/Candice Webb/2022 Hackathon/All/5.jpg");
+        inlineImages.put("image1", "M:/Candice Webb/2022 Hackathon/All/5.jpg");
         inlineImages.put("image2", "/resources/images/2.jpg");
         // creates message part
         MimeBodyPart messageBodyPart = new MimeBodyPart();
@@ -141,6 +113,39 @@ public class MailSenderSpring {
         javaMailSender.send(msg);
     }
 
+    private File getFileToInsert() throws URISyntaxException {
+        Map map = new HashMap();
+        map.put(1,"1.htm");
+        map.put(2,"2.htm");
+        map.put(3,"3.htm");
+        map.put(4,".jpg");
+        map.put(5,"5.jpg");
+        map.put(6,"6.jpg");
+        map.put(7,"7.png");
+        map.put(8,"8.png");
+        map.put(9,"9.png");
+        map.put(10,"10.jpg");
+        map.put(11,"11.jpg");
+        map.put(12,"12.jpg");
+        map.put(13,"13.jpg");
+        map.put(14,"14.jpg");
+        map.put(15,"15.jpg");
+        map.put(16,"16.jpg");
+        map.put(17,"17.jpg");
+        map.put(18,"18.jpg");
+        map.put(19,"19.jpg");
+        map.put(20,"20.jpg");
+        map.put(21,"21.jpg");
+        map.put(22,"22.jpg");
+
+        Random rand = new Random();
+        int imageName = rand.nextInt(map.size());
+
+        URL resource = getClass().getClassLoader().getResource("images/All/"+map.get(imageName));
+        File fileToInsert = new File(resource.toURI());
+        return fileToInsert;
+    }
+
     public void sendEmailWithTemplate(EMail mail) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
@@ -150,37 +155,38 @@ public class MailSenderSpring {
             mimeMessageHelper.setSubject(mail.getSubject());
             mimeMessageHelper.setFrom(mail.getFrom());
             mimeMessageHelper.setTo(mail.getTo());
-            mail.setContent(geContentFromTemplate(mail.getModel()));
-            mimeMessageHelper.setText(mail.getContent(), true);
+            // creates message part
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setContent(geContentFromTemplate(mail.getModel()), "text/html");
+
+
+            // creates multi-part
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            File fileToInsert = getFileToInsert();
+            MimeBodyPart imagePart = new MimeBodyPart();
+            imagePart.setHeader("Content-ID", "AbcXyz123");
+            imagePart.setDisposition(MimeBodyPart.INLINE);
+                //// attach the image file
+            imagePart.attachFile(fileToInsert);
+            multipart.addBodyPart(imagePart);
+            mimeMessage.setContent(multipart);
+//            mimeMessageHelper.setText(mail.getContent(), true);
 
             javaMailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (MessagingException e) {
+        } catch (MessagingException | URISyntaxException | IOException e) {
             e.printStackTrace();
         }
     }
 
     public String geContentFromTemplate(Map<String, Object> model) {
-        StringBuffer content = new StringBuffer();
-        StringBuffer body
-                = new StringBuffer("<html>This message contains two inline images.<br>");
-        body.append("The first image is a chart:<br>");
-        body.append("<img src=\"cid:image1\" width=\"30%\" height=\"30%\" /><br>");
-        body.append("The second one is a cube:<br>");
-        body.append("<img src=\"cid:image2\" width=\"15%\" height=\"15%\" /><br>");
-        body.append("End of message.");
-        body.append("</html>");
+        StringBuilder content = new StringBuilder();
 
-        // inline images
-        Map<String, String> inlineImages = new HashMap<String, String>();
-        inlineImages.put("image1", "M:/Candice Webb/2022 Hackathon/All/5.jpg");
-        inlineImages.put("image2", "M:/Candice Webb/2022 Hackathon/All/5.jpg");
-        body.append(inlineImages);
-
-//        try {
-//            //content.append(FreeMarkerTemplateUtils.processTemplateIntoString(fmConfiguration.getTemplate("EMAIL_TEMPLATE_02.html"), model));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        return body.toString();
+        try {
+            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(fmConfiguration.getTemplate("template1.html"), model));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content.toString();
     }
 }

@@ -5,9 +5,11 @@ import com.springlearning.EmailSender;
 import com.springlearning.model.User;
 import com.springlearning.services.EstimatedHappinessService;
 import com.springlearning.services.UserService;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -29,5 +31,12 @@ public class HappinessEmailController {
         if(totalHappiness < 0.8){
             emailSender.sendMessage(user);
         }
+    }
+
+    @PutMapping(value = "/updateHappiness")
+    public void updateHappiness(@RequestParam @NonNull String emailAddress, @RequestParam @NonNull double happiness) {
+        User user = userService.getUserByEmail(emailAddress);
+//        user.builder().initialHappiness(happiness).build();
+        //TODO update the user in question's happiness
     }
 }

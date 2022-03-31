@@ -27,6 +27,8 @@ public class EmailSender {
         Map<String, Object> model = new HashMap<>();
         model.put("firstName", "Happiness");
         model.put("lastName", "Prj");
+        model.put("emailAddress", "projecthapiness5@gmail.com");
+        email.setModel(model);
         mailSenderSpring.sendEmailWithTemplate(email);
     }
 
@@ -39,6 +41,7 @@ public class EmailSender {
         Map<String, Object> model = new HashMap<>();
         model.put("firstName", user.getFirstName());
         model.put("lastName",  user.getLastName());
+        email.setModel(model);
         mailSenderSpring.sendEmailWithTemplate(email);
     }
 
@@ -52,6 +55,7 @@ public class EmailSender {
         Map<String, Object> model = new HashMap<>();
         model.put("firstName", "Happiness");
         model.put("lastName", "Prj");
+        email.setModel(model);
         mailSenderSpring.sendEmailWithAttachment(email);
     }
 

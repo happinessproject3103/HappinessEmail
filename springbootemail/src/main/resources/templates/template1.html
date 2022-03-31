@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Email With Inline Images</title>
+    <style>
+        body {
+            background-image: url('https://dl.dropbox.com/s/XXXX/pageBackGround.gif');
+            background-repeat: repeat;
+            margin:0;
+            outline:0;
+        }
+        .pageContentWrapper {
+            padding:10px;
+            width: 100%;
+            background-image: url('https://dl.dropbox.com/s/XXXX/smallerInlineImage.gif');
+            background-repeat: repeat;
+        }
+        .smallerInlineImage {
+            width: 22px;
+            height: 22px;
+            padding: 0 4px 6px 0;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<div class="pageContentWrapper">
+    <h2>Hello ${firstName}</h2>
+    <p>Please accept our offering ${lastName}</p>
+    <div><img src="cid:image2" width="15%" height="15%" /><br></div>
+
+    <div class="smallerInlineImage">
+        <img src="https://dl.dropboxusercontent.com/s/3ydel6zp53pb65b/smallerInlineImage.png" height="22" width="22">
+    </div>
+    <p>Did this make you happier??</p>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.1">1</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.2">2</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.3">3</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.4">4</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.5">5</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.6">6</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.7">7</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.8">8</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=0.9">9</a>
+    <a href="/updateHappiness?emailAddress=${emailAddress}&happiness=1">10</a>
+</div>
+</body>

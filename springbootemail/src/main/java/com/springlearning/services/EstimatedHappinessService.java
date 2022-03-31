@@ -15,7 +15,7 @@ public class EstimatedHappinessService {
     OutlookMockBusynessService busynessService;
 
     public double getUserHappiness(User user){
-        WeatherDto weatherDto = weatherService.getWeatherForecast("dfjasdlk");
+        WeatherDto weatherDto = weatherService.getWeatherForecast("bristol");
         double busyness = busynessService.getHoursInMeetings();
 
         return ( weatherDto.getSunny() + weatherDto.getTemperature() + weatherDto.getWindSpeed() + busyness ) / 4;
