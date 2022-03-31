@@ -14,7 +14,7 @@ public class EstimatedHappinessService {
     @Autowired
     OutlookMockBusynessService busynessService;
 
-    double getUserHappiness(User user){
+    public double getUserHappiness(User user){
         WeatherDto weatherDto = weatherService.getWeatherForecast("dfjasdlk");
         double busyness = busynessService.getHoursInMeetings();
 
