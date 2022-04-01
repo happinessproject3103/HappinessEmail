@@ -41,6 +41,7 @@ public class EmailSender {
         Map<String, Object> model = new HashMap<>();
         model.put("firstName", user.getFirstName());
         model.put("lastName",  user.getLastName());
+        model.put("user", user);
         email.setModel(model);
         mailSenderSpring.sendEmailWithTemplate(email);
     }

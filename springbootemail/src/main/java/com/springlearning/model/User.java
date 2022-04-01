@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Builder
 @Data
 @Getter
@@ -14,4 +17,5 @@ public class User {
     private final String lastName;
     private final String emailAddress;
     private final double initialHappiness;
+    private final Map<String, Integer> likes = new HashMap<>();
 }

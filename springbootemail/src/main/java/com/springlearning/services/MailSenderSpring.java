@@ -1,13 +1,13 @@
 package com.springlearning.services;
 
 import com.springlearning.model.EMail;
+import com.springlearning.model.User;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -24,11 +24,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class MailSenderSpring {
     @Autowired
@@ -60,7 +65,7 @@ public class MailSenderSpring {
         helper.setSubject(mail.getSubject());
        // helper.setText(mail.getContent());
 
-        File fileToInsert = getFileToInsert();
+        File fileToInsert = getFileToInsert((User)mail.getModel().get("user"));
         MimeBodyPart imagePart = new MimeBodyPart();
         imagePart.setHeader("Content-ID", "AbcXyz123");
         imagePart.setDisposition(MimeBodyPart.INLINE);
@@ -113,37 +118,50 @@ public class MailSenderSpring {
         javaMailSender.send(msg);
     }
 
-    private File getFileToInsert() throws URISyntaxException {
-        Map map = new HashMap();
-        map.put(1,"1.htm");
-        map.put(2,"2.htm");
-        map.put(3,"3.htm");
-        map.put(4,".jpg");
-        map.put(5,"5.jpg");
-        map.put(6,"6.jpg");
-        map.put(7,"7.png");
-        map.put(8,"8.png");
-        map.put(9,"9.png");
-        map.put(10,"10.jpg");
-        map.put(11,"11.jpg");
-        map.put(12,"12.jpg");
-        map.put(13,"13.jpg");
-        map.put(14,"14.jpg");
-        map.put(15,"15.jpg");
-        map.put(16,"16.jpg");
-        map.put(17,"17.jpg");
-        map.put(18,"18.jpg");
-        map.put(19,"19.jpg");
-        map.put(20,"20.jpg");
-        map.put(21,"21.jpg");
-        map.put(22,"22.jpg");
+    private File getFileToInsert(User user) throws URISyntaxException {
+        List<String> files = new ArrayList<>();
+        files.add("animals/1.jpg");
+        files.add("animals/2.jpg");
+        files.add("animals/3.jpg");
+
+        files.add("nature/1.jpg");
+        files.add("nature/2.jpg");
+        files.add("nature/3.jpg");
+
+        files.add("quotes/1.jpg");
+        files.add("quotes/2.jpg");
+        files.add("quotes/3.jpg");
+        files.add("quotes/4.jpg");
+        files.add("quotes/5.jpg");
+        files.add("quotes/6.jpg");
+
+        files.add("recipes/1.jpg");
+        files.add("recipes/2.jpg");
+        files.add("recipes/3.jpg");
+        files.add("recipes/4.jpg");
+
+        files.add("jokes/1.png");
+        files.add("jokes/2.png");
+        files.add("jokes/3.png");
+
+        List<String> userLikes = user.getLikes().keySet().stream().filter(key -> user.getLikes().get(key) == 1).collect(Collectors.toList());
+        List<String> filesThatUserLike = files.stream().filter(file -> doesUserLike(file, userLikes)).collect(Collectors.toList());
 
         Random rand = new Random();
-        int imageName = rand.nextInt(map.size());
+        int imageName = rand.nextInt(filesThatUserLike.size());
 
-        URL resource = getClass().getClassLoader().getResource("images/All/"+map.get(imageName));
+        URL resource = getClass().getClassLoader().getResource("images/" +filesThatUserLike.get(imageName));
         File fileToInsert = new File(resource.toURI());
         return fileToInsert;
+    }
+
+    private boolean doesUserLike(String file, List<String> userLikes) {
+        for(String likes : userLikes){
+            if(file.contains(likes)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void sendEmailWithTemplate(EMail mail) {
@@ -157,13 +175,15 @@ public class MailSenderSpring {
             mimeMessageHelper.setTo(mail.getTo());
             // creates message part
             MimeBodyPart messageBodyPart = new MimeBodyPart();
+            log.info("attempt to send email");
             messageBodyPart.setContent(geContentFromTemplate(mail.getModel()), "text/html");
 
 
             // creates multi-part
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(messageBodyPart);
-            File fileToInsert = getFileToInsert();
+
+            File fileToInsert = getFileToInsert((User)mail.getModel().get("user"));
             MimeBodyPart imagePart = new MimeBodyPart();
             imagePart.setHeader("Content-ID", "AbcXyz123");
             imagePart.setDisposition(MimeBodyPart.INLINE);
