@@ -34,7 +34,7 @@ public class UserService {
                             .emailAddress(values[0])
                             .firstName(values[1])
                             .lastName(values[2])
-                            .initialHappiness(Double.parseDouble(values[3]))
+                            .happiness(Double.parseDouble(values[3]))
                             .build();
                     newUser.getLikes().put("animals", Integer.parseInt(values[4]));
                     newUser.getLikes().put("quotes", Integer.parseInt(values[5]));

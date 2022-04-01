@@ -18,6 +18,6 @@ public class EstimatedHappinessService {
         WeatherDto weatherDto = weatherService.getWeatherForecast("bristol");
         double busyness = busynessService.getHoursInMeetings();
 
-        return ( weatherDto.getSunny() + weatherDto.getTemperature() + weatherDto.getWindSpeed() + busyness ) / 4;
+        return  weatherDto.getSunny() * 0.3  + weatherDto.getTemperature() * 0.2 + weatherDto.getWindSpeed() * 0.1 + busyness * 0.4 ;
     }
 }
