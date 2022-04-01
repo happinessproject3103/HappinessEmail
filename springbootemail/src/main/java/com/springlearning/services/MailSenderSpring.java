@@ -67,10 +67,11 @@ public class MailSenderSpring {
 
         File fileToInsert = getFileToInsert((User)mail.getModel().get("user"));
         MimeBodyPart imagePart = new MimeBodyPart();
-        imagePart.setHeader("Content-ID", "AbcXyz123");
+        imagePart.setHeader("Content-ID", "image");
         imagePart.setDisposition(MimeBodyPart.INLINE);
 //// attach the image file
        imagePart.attachFile(fileToInsert);
+
 
         StringBuffer body
                 = new StringBuffer("<html>This message contains two inline images.<br>");
@@ -155,6 +156,41 @@ public class MailSenderSpring {
         return fileToInsert;
     }
 
+    private String getFilePathToInsert(User user) throws URISyntaxException {
+        List<String> files = new ArrayList<>();
+        files.add("animals/1.jpg");
+        files.add("animals/2.jpg");
+        files.add("animals/3.jpg");
+
+        files.add("nature/1.jpg");
+        files.add("nature/2.jpg");
+        files.add("nature/3.jpg");
+
+        files.add("quotes/1.jpg");
+        files.add("quotes/2.jpg");
+        files.add("quotes/3.jpg");
+        files.add("quotes/4.jpg");
+        files.add("quotes/5.jpg");
+        files.add("quotes/6.jpg");
+
+        files.add("recipes/1.jpg");
+        files.add("recipes/2.jpg");
+        files.add("recipes/3.jpg");
+        files.add("recipes/4.jpg");
+
+        files.add("jokes/1.png");
+        files.add("jokes/2.png");
+        files.add("jokes/3.png");
+
+        List<String> userLikes = user.getLikes().keySet().stream().filter(key -> user.getLikes().get(key) == 1).collect(Collectors.toList());
+        List<String> filesThatUserLike = files.stream().filter(file -> doesUserLike(file, userLikes)).collect(Collectors.toList());
+
+        Random rand = new Random();
+        int imageName = rand.nextInt(filesThatUserLike.size());
+
+        return filesThatUserLike.get(imageName);
+    }
+
     private boolean doesUserLike(String file, List<String> userLikes) {
         for(String likes : userLikes){
             if(file.contains(likes)){
@@ -176,6 +212,9 @@ public class MailSenderSpring {
             // creates message part
             MimeBodyPart messageBodyPart = new MimeBodyPart();
             log.info("attempt to send email");
+
+            String filePathToInsert = getFilePathToInsert((User)mail.getModel().get("user"));
+            mail.getModel().put("imagePath",filePathToInsert);
             messageBodyPart.setContent(geContentFromTemplate(mail.getModel()), "text/html");
 
 
@@ -183,18 +222,18 @@ public class MailSenderSpring {
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(messageBodyPart);
 
-            File fileToInsert = getFileToInsert((User)mail.getModel().get("user"));
-            MimeBodyPart imagePart = new MimeBodyPart();
-            imagePart.setHeader("Content-ID", "AbcXyz123");
-            imagePart.setDisposition(MimeBodyPart.INLINE);
-                //// attach the image file
-            imagePart.attachFile(fileToInsert);
-            multipart.addBodyPart(imagePart);
+//            File fileToInsert = getFileToInsert((User)mail.getModel().get("user"));
+//            MimeBodyPart imagePart = new MimeBodyPart();
+//            imagePart.setHeader("Content-ID", "image");
+//            imagePart.setDisposition(MimeBodyPart.INLINE);
+//                //// attach the image file
+//            imagePart.attachFile(fileToInsert);
+//            multipart.addBodyPart(imagePart);
             mimeMessage.setContent(multipart);
 //            mimeMessageHelper.setText(mail.getContent(), true);
 
             javaMailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (MessagingException | URISyntaxException | IOException e) {
+        } catch (MessagingException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
